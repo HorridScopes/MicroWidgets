@@ -1,4 +1,4 @@
-package Main;
+package com.kishan.Main;
 import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;

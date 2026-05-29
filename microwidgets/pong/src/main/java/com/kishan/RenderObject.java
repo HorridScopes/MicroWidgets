@@ -1,4 +1,4 @@
-package Main;
+package com.kishan.Main;
 import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;

@@ -1,4 +1,4 @@
-package Main;
+package com.kishan.Main;
 import java.awt.geom.Point2D;
 import java.util.Random;
 
