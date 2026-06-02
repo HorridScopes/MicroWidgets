@@ -1,3 +1,7 @@
 {
-    "java.dependency.packagePresentation": "hierarchical"
+    "java.dependency.packagePresentation": "hierarchical",
+    "java.project.sourcePaths": [
+        "common/src/main/java",
+        "pong/src/main/java"
+    ]
 }
