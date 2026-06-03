@@ -126,23 +126,34 @@ public class Main {
      */
     public static void triggerScoringSequence() {
         isPaused = true;
-        new Thread(() -> {
-            try {
-                System.out.println("PAUSE: Showing score for 500ms");
-                Thread.sleep(500); // Show score
-                System.out.println("PAUSE: Resetting positions");
+        // Use a scheduled executor to avoid manual Thread.sleep and to
+        // perform state resets on the EDT to avoid races.
+        final java.util.concurrent.ScheduledExecutorService scorer = java.util.concurrent.Executors.newSingleThreadScheduledExecutor(r -> {
+            Thread t = new Thread(r, "mw-scorer");
+            t.setDaemon(true);
+            return t;
+        });
+
+        // After 500ms: reset positions on EDT
+        scorer.schedule(() -> {
+            System.out.println("PAUSE: Resetting positions (scheduled)");
+            javax.swing.SwingUtilities.invokeLater(() -> {
                 Config.Paddle.LeftPaddle.resetToCenter();
                 Config.Paddle.RightPaddle.resetToCenter();
                 AI.reset();
                 Config.Ball.resetToCenter();
-                System.out.println("PAUSE: Showing reset for 1000ms");
-                Thread.sleep(1000); // Show reset
-                System.out.println("PAUSE: Resuming game");
-                isPaused = false;
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
+            });
+
+            // After reset, wait 1000ms then resume on EDT and shutdown scheduler
+            scorer.schedule(() -> {
+                System.out.println("PAUSE: Resuming game (scheduled)");
+                javax.swing.SwingUtilities.invokeLater(() -> {
+                    isPaused = false;
+                });
+                scorer.shutdown();
+            }, 1000, java.util.concurrent.TimeUnit.MILLISECONDS);
+
+        }, 500, java.util.concurrent.TimeUnit.MILLISECONDS);
     }
 
     /** Executor service for the game update loop */
