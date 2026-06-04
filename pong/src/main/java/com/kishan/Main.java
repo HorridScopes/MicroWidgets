@@ -6,11 +6,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
+import com.kishan.common.IThread;
 import javax.swing.SwingUtilities;
 
 /**
@@ -60,7 +57,7 @@ public class Main {
 
         screen.startRenderLoop(1000 / 120);
         screen.setVisible(true);
-        startUpdateLoop(1000 / 60);
+        updateThread.startThread(1000 / 60);
 
         screen.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
@@ -110,7 +107,8 @@ public class Main {
      * Tracks whether the game is currently paused (e.g., during score display, or
      * inactive screen)
      */
-    private static boolean isPaused = false;
+    private static boolean isPaused = true;
+    static final IThread updateThread = IThread.create(() -> SwingUtilities.invokeLater(Main::Update));
 
     /**
      * Triggers the scoring sequence animation and pause.
@@ -156,55 +154,6 @@ public class Main {
         }, 500, java.util.concurrent.TimeUnit.MILLISECONDS);
     }
 
-    /** Executor service for the game update loop */
-    private static final ScheduledExecutorService updateExecutor = Executors.newSingleThreadScheduledExecutor();
-    /** Future object representing the scheduled update loop task */
-    private static ScheduledFuture<?> updateFuture;
-
-    /**
-     * Starts the game update loop at a fixed rate.
-     * 
-     * The update loop runs the game's physics and logic updates at the specified
-     * interval.
-     * Updates include paddle movement, ball physics, AI logic, and rendering.
-     * 
-     * @param periodMillis The period between updates in milliseconds (typically
-     *                     1000/60 = ~16.67ms for 60 FPS)
-     */
-    public static void startUpdateLoop(long periodMillis) {
-        stopUpdateLoop();
-
-        updateFuture = updateExecutor.scheduleAtFixedRate(() -> {
-            SwingUtilities.invokeLater(Main::Update);
-        }, 0, periodMillis, TimeUnit.MILLISECONDS);
-        System.out.println("Starting Update Loop " + updateFuture.hashCode());
-    }
-
-    /**
-     * Stops the game update loop.
-     * 
-     * Cancels the scheduled update tasks and cleans up resources.
-     * Safe to call multiple times or when no loop is running.
-     */
-    public static void stopUpdateLoop() {
-        if (updateFuture != null && !updateFuture.isDone()) {
-            System.out.println("Stopping Update Loop " + updateFuture.hashCode());
-
-            updateFuture.cancel(false);
-        }
-        updateFuture = null;
-
-    }
-
-    /**
-     * Checks if the game update loop is currently running.
-     * 
-     * @return true if the update loop is active, false otherwise
-     */
-    public static boolean isUpdateLoopRunning() {
-        return updateFuture != null && !updateFuture.isDone();
-    }
-
     /**
      * Main game update method called every game tick.
      * 
@@ -217,10 +166,10 @@ public class Main {
      * 6. Updates right paddle position
      */
     public static void Update() {
-        graphicalRender.postImage();
         if (isPaused) {
             return;
         }
+        graphicalRender.postImage();
         Config.Paddle.LeftPaddle.Move(Config.Paddle.organizeInput(Config.Paddle.LeftPaddle.input));
         Config.Ball.Move();
         AI.update();

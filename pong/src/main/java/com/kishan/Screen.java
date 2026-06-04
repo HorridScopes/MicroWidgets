@@ -1,6 +1,7 @@
 
 package com.kishan;
 
+import com.kishan.common.IThread;
 import com.kishan.common.RenderContext;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -9,11 +10,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
@@ -58,10 +54,7 @@ public class Screen extends JFrame implements RenderContext {
         pack();
     }
 
-    /** Executor service for the render loop */
-    private final ScheduledExecutorService renderExecutor = Executors.newSingleThreadScheduledExecutor();
-    /** Future representing the scheduled render loop task */
-    private ScheduledFuture<?> renderFuture;
+    private final IThread renderThread = IThread.create(() -> SwingUtilities.invokeLater(this::updateRender));
 
     /**
      * Gets the content pane dimensions (usable game area).
@@ -83,10 +76,7 @@ public class Screen extends JFrame implements RenderContext {
     public void startRenderLoop(long periodMillis) {
         stopRenderLoop();
 
-        renderFuture = renderExecutor.scheduleAtFixedRate(() -> {
-            SwingUtilities.invokeLater(this::updateRender);
-        }, 0, periodMillis, TimeUnit.MILLISECONDS);
-        System.out.println("Starting Render Loop " + renderFuture.hashCode());
+        renderThread.startThread(periodMillis);
     }
 
     /**
@@ -95,13 +85,11 @@ public class Screen extends JFrame implements RenderContext {
      * Cancels the scheduled render tasks and cleans up resources.
      */
     public void stopRenderLoop() {
-        if (renderFuture != null && !renderFuture.isDone()) {
-            System.out.println("Stopping Render Loop " + renderFuture.hashCode());
-
-            renderFuture.cancel(false);
+        try {
+            renderThread.stopThread();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-        renderFuture = null;
-
     }
 
     /**
@@ -110,7 +98,7 @@ public class Screen extends JFrame implements RenderContext {
      * @return true if render loop is active, false otherwise
      */
     public boolean isRenderLoopRunning() {
-        return renderFuture != null && !renderFuture.isDone();
+        return renderThread.isThreadRunning();
     }
 
     private void addCloseOnRightClickListener() {
@@ -128,7 +116,11 @@ public class Screen extends JFrame implements RenderContext {
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 stopRenderLoop();
-                Main.stopUpdateLoop();
+                try {
+                    Main.updateThread.stopThread();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
                 System.exit(0);
             }
         });
