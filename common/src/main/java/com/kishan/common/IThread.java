@@ -20,6 +20,8 @@ public interface IThread {
 
     boolean resumeThread() throws Exception;
 
+    void shutdown() throws Exception;
+
     static IThread create(Runnable repeat) {
         return new IThreadImpl(repeat);
     }
@@ -91,5 +93,11 @@ final class IThreadImpl implements IThread {
         }
         paused = false;
         return true;
+    }
+
+    @Override
+    public void shutdown() throws Exception {
+        stopThread();
+        executor.shutdown();
     }
 }

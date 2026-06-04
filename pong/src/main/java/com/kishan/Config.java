@@ -36,7 +36,7 @@ public class Config {
         /** Paddle movement speed in pixels per frame */
         private static float baseMovementSpeed = 2;
         private static float DynamicMovementSpeed = 2;
-        private static float DynamicSpeedModifier = 0.05f;
+        private static float DynamicSpeedModifier = 0.04f;
         /** Rectangle representing paddle position and dimensions */
         protected Rectangle2D.Double rectangle;
         /** Left player's paddle instance */
@@ -225,7 +225,7 @@ public class Config {
      */
     public static class Ball {
         /** Ball radius in pixels */
-        static final int RADIUS = 10;
+        static final int RADIUS = 5;
         /** Number of paddle hits in current round (used for speed increase) */
         static int paddleHitsDuringRound = 0;
         /** Current position of the ball */
@@ -235,7 +235,7 @@ public class Config {
         /** Base speed (pixels per frame) at start of round */
         static double baseSpeed = 3;
         /** Speed increase per paddle hit */
-        static float speedIncrease = 0.03f;
+        static float speedIncrease = 0.01f;
         /** Current speed (pixels per frame) */
         static double speed = 3;
         /** Scaling factor for paddle hit angle adjustment */
@@ -324,8 +324,7 @@ public class Config {
         private static void handlePaddleCollision(Paddle paddle) {
             System.out.println("Ball collision with paddle!");
             // Calculate angle adjustment based on hit position
-            paddleHitsDuringRound++;
-            speed += paddleHitsDuringRound * speedIncrease;
+            
             double paddleCenterY = paddle.rectangle.getCenterY();
             double ballCenterY = location.y;
             double offset = ballCenterY - paddleCenterY;
@@ -344,6 +343,8 @@ public class Config {
                 } while (location.x + RADIUS > Config.Paddle.RightPaddle.getX());
             }
             direction %= 360; // normalize to 0-360
+            paddleHitsDuringRound++;
+            speed += paddleHitsDuringRound * speedIncrease;
 
         }
 

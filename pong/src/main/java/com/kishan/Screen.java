@@ -28,7 +28,9 @@ public class Screen extends JFrame implements RenderContext {
     /** Image buffer for next frame to render */
     public Image nextRender;
     /** Flag indicating if at least one frame has been rendered */
-    private boolean hasRendered = false;
+    public boolean hasRendered = false;
+    /** Flag indicating whether the last posted frame is ready and waiting for render */
+    private volatile boolean frameReadyForRender = true;
 
     /**
      * Constructs a game window with specified configuration.
@@ -117,7 +119,7 @@ public class Screen extends JFrame implements RenderContext {
             public void windowClosing(WindowEvent e) {
                 stopRenderLoop();
                 try {
-                    Main.updateThread.stopThread();
+                    Main.updateThread.shutdown();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -142,17 +144,22 @@ public class Screen extends JFrame implements RenderContext {
 
     /**
      * Sets the image to render on the next frame.
+     * Called when a new frame image has been posted and is ready to display.
      * 
      * @param img The buffered image to display
      */
     public void setRenderImage(Image img) {
         nextRender = img;
+        frameReadyForRender = true;
     }
 
+    /**
+     * Called each render cycle. Only repaints if a new frame is ready.
+     * Ensures we don't issue multiple render commands for the same frame.
+     */
     public void updateRender() {
-        if (hasRendered) {
-            return;
-        } else {
+        if (frameReadyForRender && !hasRendered) {
+            frameReadyForRender = false;
             repaint();
         }
     }

@@ -20,7 +20,7 @@ public class RenderObject {
     /** Standard paddle color (light gray) */
     public static final Color PADDLE_COLOR = new Color(230, 230, 230);
 
-    public static final Color BALL_COLOR = new Color(200, 50, 50);
+    public static final Color BALL_COLOR = new Color(230, 230, 230);
 
     /**
      * Constructs a render object with a shape and color.

@@ -20,7 +20,7 @@ import javax.swing.SwingUtilities;
  * - Handling keyboard input for the left paddle
  * - Controlling game state during scoring sequences
  * 
- * The game runs at 120 FPS for rendering and 60 FPS for game logic updates.
+ * The game runs at 60 FPS for both rendering and game logic updates.
  */
 public class Main {
 
@@ -55,7 +55,7 @@ public class Main {
 
         Config.Ball.init();
 
-        screen.startRenderLoop(1000 / 120);
+        screen.startRenderLoop(1000 / 60);
         screen.setVisible(true);
         updateThread.startThread(1000 / 60);
 
@@ -169,7 +169,9 @@ public class Main {
         if (isPaused) {
             return;
         }
-        graphicalRender.postImage();
+        if(Screen.hasRend   ered) {
+            graphicalRender.postImage();
+        }
         Config.Paddle.LeftPaddle.Move(Config.Paddle.organizeInput(Config.Paddle.LeftPaddle.input));
         Config.Ball.Move();
         AI.update();
