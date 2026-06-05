@@ -30,6 +30,7 @@ public class Main {
     public static Config.Paddle leftPaddle;
     /** Right player's paddle (AI controlled) */
     public static Config.Paddle rightPaddle;
+    public static Screen screen;
 
     /**
      * Entry point for the Pong game.
@@ -41,7 +42,7 @@ public class Main {
      * @throws Exception If initialization fails
      */
     public static void main(String[] args) throws Exception {
-        Screen screen = new Screen(new Dimension(300, 300), true, false, true);
+        screen = new Screen(new Dimension(300, 300), true, false, true);
 
         graphicalRender = new GraphicalRender(screen);
         Config.Paddle.screenArea = screen.getContentSize();
@@ -169,7 +170,7 @@ public class Main {
         if (isPaused) {
             return;
         }
-        if(Screen.hasRend   ered) {
+        if(screen.hasRendered) {
             graphicalRender.postImage();
         }
         Config.Paddle.LeftPaddle.Move(Config.Paddle.organizeInput(Config.Paddle.LeftPaddle.input));
