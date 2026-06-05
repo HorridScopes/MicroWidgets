@@ -452,6 +452,11 @@ public class Config {
         /** Font for displaying scoreboard text */
         public static final Font ScoreboardFont;
 
+        public static final int SEPERATOR_COUNT = 10;
+        public static final float SEPERATOR_WIDTH = 4;
+        public static final float SEPERATOR_PADDING_FACTOR = 0.5f;
+        public static final Color SEPERATOR_COLOR = new Color(100, 100, 100);
+
         static {
             System.out.println("Loading font resource for scoreboard...");
             try (InputStream fontStream = Config.class.getResourceAsStream("/Main/Resources/MedodicaRegular.otf")) {

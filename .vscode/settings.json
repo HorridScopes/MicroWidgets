@@ -4,5 +4,8 @@
         "common/src/main/java",
         "pong/src/main/java"
     ],
-    "maven.view": "hierarchical"
+    "maven.view": "hierarchical",
+    "files.exclude": {
+        "**/.git": false
+    }
 }

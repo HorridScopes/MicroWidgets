@@ -158,7 +158,7 @@ public class Screen extends JFrame implements RenderContext {
      * Ensures we don't issue multiple render commands for the same frame.
      */
     public void updateRender() {
-        if (frameReadyForRender && !hasRendered) {
+        if (frameReadyForRender) {
             frameReadyForRender = false;
             repaint();
         }

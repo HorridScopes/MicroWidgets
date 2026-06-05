@@ -170,9 +170,7 @@ public class Main {
         if (isPaused) {
             return;
         }
-        if(screen.hasRendered) {
-            graphicalRender.postImage();
-        }
+        graphicalRender.postImage();
         Config.Paddle.LeftPaddle.Move(Config.Paddle.organizeInput(Config.Paddle.LeftPaddle.input));
         Config.Ball.Move();
         AI.update();

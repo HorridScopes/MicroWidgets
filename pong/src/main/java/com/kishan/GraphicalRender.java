@@ -75,6 +75,14 @@ public class GraphicalRender extends AbstractGraphicalRender {
                                                 Config.Paddle.screenArea.width * 0.7,
                                                 0).x,
                                 50);
+
+                g2d.setColor(Config.Rendering.SEPERATOR_COLOR);
+                int seperatorHeight = (int) (screenSize.height / (Config.Rendering.SEPERATOR_COUNT * (1 + Config.Rendering.SEPERATOR_PADDING_FACTOR) - (Config.Rendering.SEPERATOR_PADDING_FACTOR * 2)) + Config.Rendering.SEPERATOR_PADDING_FACTOR);
+                for(int i = 0 ; i < Config.Rendering.SEPERATOR_COUNT; i++) {
+                        int y = (int)(i * seperatorHeight * (1 + Config.Rendering.SEPERATOR_PADDING_FACTOR));
+                        g2d.fillRect((int)(screenSize.width / 2 - Config.Rendering.SEPERATOR_WIDTH / 2), y, (int)Config.Rendering.SEPERATOR_WIDTH, seperatorHeight);
+                }
+
                 RenderObject ballRender = Config.Ball.getDraw();
                 g2d.setColor(ballRender.color);
                 g2d.fill(ballRender.shape);
