@@ -1,0 +1,11 @@
+{
+    "java.dependency.packagePresentation": "hierarchical",
+    "java.project.sourcePaths": [
+        "common/src/main/java",
+        "new-moon/src/main/java"
+    ],
+    "maven.view": "hierarchical",
+    "files.exclude": {
+        "**/.git": false
+    }
+}
